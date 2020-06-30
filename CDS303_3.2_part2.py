@@ -123,10 +123,10 @@ def fun1(list,characters,minSupport):
 minSupport = 4
 # c4
 print('\n\n\n\n4\n')
-fun = fun4(list1,'ABCDEFGH',0)
+fun = fun4(list1,'BEGH',0)
 for i in range(0,len(fun)):
     print(fun[i])
-with open('c4.csv','w',newline='') as f:
+with open('c4_2.csv','w',newline='') as f:
     writer1 = csv.writer(f,'excel')
     firstLine = []
     totalsLine = []
@@ -172,11 +172,11 @@ with open('c4.csv','w',newline='') as f:
 # l4
 minSupport = 4
 print('\n\n\n\n4\n')
-fun = fun4(list1,'ABCDEFGH',4)
+fun = fun4(list1,'BEGH',6)
 print(arr4)
 for i in range(0,len(fun)):
     print(fun[i])
-with open('l4.csv','w',newline='') as f:
+with open('l4_2.csv','w',newline='') as f:
 
 
     writer1 = csv.writer(f,'excel')
@@ -228,10 +228,10 @@ with open('l4.csv','w',newline='') as f:
 
 # c3
 print('\n\n\n\n3\n')
-fun = fun3(list1,'ABCDEFGH',0)
+fun = fun3(list1,'BEGH',0)
 for i in range(0,len(fun)):
     print(fun[i])
-with open('c3.csv','w',newline='') as f:
+with open('c3_2.csv','w',newline='') as f:
     writer1 = csv.writer(f,'excel')
     firstLine = []
     totalsLine = []
@@ -257,17 +257,29 @@ with open('c3.csv','w',newline='') as f:
 
     writer1.writerow( fun[1] )
     arr4 = np.zeros(((len(list1), len(fun[1]))))
-    for row in arr4:
+    arr = arr4.tolist()
+    dict1={}
+    for i in range(0,len(fun[1])):
+        dict1[fun[1][i]] = i
+    for i in range(0,len(listID)):
+        a =listID[i][0]-1
+        b = dict1[listID[i][1]]
+        c = listID[i][1]
+        arr[a] [b] = listID[i][1]
+
+    #arr4(listID[0],dict[listID[1]]) = 1
+
+    for row in arr:
         writer1.writerow(row)
-    print(arr4.shape)
+    #print(arr.shape)
     writer1.writerow( totalsLine )
 
 # l3
 print('\n\n\n\n3\n')
-fun = fun3(list1,'ABCDEFGH',1)
+fun = fun3(list1,'BEGH',6)
 for i in range(0,len(fun)):
     print(fun[i])
-with open('l3.csv', 'w', newline='') as f:
+with open('l3_2.csv', 'w', newline='') as f:
     writer1 = csv.writer(f, 'excel')
     # fistline takes only letters that surpassed the minSupport parameter
     firstLine = []
@@ -318,14 +330,14 @@ with open('l3.csv', 'w', newline='') as f:
 
 # c2
 print('\n\n\n\n2\n')
-fun = fun2(list1,'ABCDEFGH',0)
+fun = fun2(list1,'BEGH',0)
 for i in range(0,len(fun)):
     print(fun[i])
 print('\n\n\n\n4\n')
-fun = fun4(list1,'ABCDEFGH',0)
+fun = fun4(list1,'BEGH',0)
 for i in range(0,len(fun)):
     print(fun[i])
-with open('c2.csv','w',newline='') as f:
+with open('c2_2.csv','w',newline='') as f:
     writer1 = csv.writer(f,'excel')
     firstLine = []
     totalsLine = []
@@ -368,13 +380,12 @@ with open('c2.csv','w',newline='') as f:
     #print(arr.shape)
     writer1.writerow( totalsLine )
 
-
 # l2
 print('\n\n\n\n2\n')
-fun = fun2(list1,'ABCDEFGH',4)
+fun = fun2(list1,'BEGH',6)
 for i in range(0,len(fun)):
     print(fun[i])
-with open('l2.csv', 'w', newline='') as f:
+with open('l2_2.csv', 'w', newline='') as f:
     writer1 = csv.writer(f, 'excel')
     # fistline takes only letters that surpassed the minSupport parameter
     firstLine = []
@@ -424,10 +435,10 @@ with open('l2.csv', 'w', newline='') as f:
 
 # c1
 print('\n\n\n\n1\n')
-fun = fun1(list1,'ABCDEFGHIJKL', 0)
+fun = fun1(list1,'BEGH', 0)
 for i in range(0,len(fun)):
     print(fun[i])
-with open('c1.csv','w',newline='') as f:
+with open('c1_2.csv','w',newline='') as f:
     writer1 = csv.writer(f,'excel')
     firstLine = []
     totalsLine = []
@@ -472,10 +483,10 @@ with open('c1.csv','w',newline='') as f:
 
 # l1
 print('\n\n\n\n1\n')
-fun = fun1(list1,'ABCDEFGHIJKL',4)
+fun = fun1(list1,'BEGH',6)
 for i in range(0,len(fun)):
     print(fun[i])
-with open('l1.csv','w',newline='') as f:
+with open('l1_2.csv','w',newline='') as f:
 
 
     writer1 = csv.writer(f,'excel')

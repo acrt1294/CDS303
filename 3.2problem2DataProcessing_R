@@ -1,0 +1,209 @@
+library(rje)
+
+################################################################################################################
+'Exercise 3.2: Apriori algorithm: problem 1'
+################################################################################################################
+
+c1 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\c1.csv')
+c2 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\c2.csv')
+c3 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\c3.csv')
+c4 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\c4.csv')
+
+l1 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\l1.csv')
+l2 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\l2.csv')
+l3 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\l3.csv')
+l4 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\l4.csv')
+
+################################################################################################################
+'Exercise 3.2: Apriori algorithm: problem 2'
+################################################################################################################
+
+c1_2 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\c1_2.csv')
+c2_2 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\c2_2.csv')
+c3_2 <-read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\c3_2.csv')
+c4_2 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\c4_2.csv')
+
+l1_2 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\l1_2.csv')
+l2_2<-read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\l2_2.csv')
+l3_2 <- read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\l3_2.csv')
+l4_2 <-read.csv('C:\\Users\\acrt1\\Desktop\\gmu\\summer 2020\\CDS303\\l4_2.csv')
+
+
+# takes in data frame, outputs dataframe, with an addtitonal row with decission if prune or not
+toPruneOrNotToPrune <- function(SubjecttTable, minSupport){
+  
+  howManyCols <- ncol(SubjecttTable)
+  
+  # add row, if new row = 1, pattern passes to next level.
+  newRow <- as.vector(matrix(0,nrow = howManyCols ))
+  SubjecttTable <- rbind(SubjecttTable,newRow)
+  
+  # as matrix since r interprets the elements of table as factors.
+  SubjecttTable <- as.matrix(SubjecttTable)
+  
+  # col by col verification to see if pattern passes on
+  for (i in seq(1:ncol(SubjecttTable))) {
+    if ( as.numeric(SubjecttTable[nrow(SubjecttTable)-1, i]) >= minSupport ){
+      SubjecttTable[nrow(SubjecttTable), i] <- TRUE
+    }
+    else {
+      SubjecttTable[nrow(SubjecttTable), i] <- FALSE
+      
+    }
+  }
+  return(SubjecttTable)
+}
+
+
+# generate list with candidates, returns lvl and candidate list
+# charactersToMatch is the a list containing what characters will be used
+# In this case charactersToMatch =  c('B','E','G','H')
+powerSetGenerationmk2 <- function(charactersToMatch){
+  
+  cardinality <- length(charactersToMatch)
+  
+  powersetList <- powerSet(charactersToMatch,cardinality)
+  powersetList <- powersetList[-1]
+  
+  # organize powerset for pruning, indexing such that null set not included
+  powersetList <- powersetList[order(nchar(powersetList))]
+  powersetList.organized = NULL
+  currentList = NULL
+  currentRow = NULL
+  currentString = NULL
+  
+  cardinality <- length(charactersToMatch)
+  for (i in seq(1:cardinality)){
+    
+    currentRow = NULL
+    for (j in seq(1:length(powersetList))) {
+      thing <- powersetList[[j]] 
+      stat <- nchar(powersetList[[j]]) == i
+      
+      
+      if (length(powersetList[[j]]) == i ){
+        
+        currentString = paste(powersetList[[j]], sep = '', collapse = '')
+        currentRow = c(currentRow,currentString)
+        currentRow <- sort(currentRow)
+      }
+    }
+    currentList <- c(currentList, currentRow)
+  }
+  return(currentList)
+}
+
+
+# removes rejected patterns, outputs accepted patterns that met or exceeded the minSupport treshhold
+stringkiller <- function(power.set,lvl,SubjectTable.processed,charactersToMatch){
+  
+  SubjectTable.processed <- as.data.frame(SubjectTable.processed)
+  
+  currentElements = NULL
+  currentElements =NULL
+  
+  numcols <- ncol(SubjectTable.processed)
+  numrows <- nrow(SubjectTable.processed)
+  
+  currentDF <- NULL
+  rejectedStrings <- NULL
+  approvedstrings <- NULL
+  
+  # checks for rejected item sets and 
+  for (i in seq(1:numcols)) {
+    if (SubjectTable.processed[numrows,i] == FALSE ){
+      rejectedStrings <- c(rejectedStrings,colnames(SubjectTable.processed[i]))
+    }
+  }
+  
+  # deletes rejected strings from powerset, and creates aproved string list
+  # needs reworking to make more efficient
+  tempPowerSet <- NULL
+  if (length(rejectedStrings) != 0){
+    for (elem in rejectedStrings){
+      indexesToDump <-grep(elem,power.set)
+      if (length(indexesToDump)>0){
+      power.set <- power.set[-indexesToDump]
+      }
+    }
+  }
+  else {
+  }
+  return(power.set)
+}
+
+
+# prunes if minSupport not equaled or exceeded. SubjectTable.processed => toPruneOrNotToPrune(subjectTable)
+# element set => elements to be searched for (in this case 'BEGH')
+prunemk4 <- function(power.set,lvl,SubjectTable.processed,charactersToMatch){
+  
+  currentElements = NULL
+  currentElements =NULL
+  
+  numcols <- ncol(SubjectTable.processed)
+  numrows <- nrow(SubjectTable.processed)
+  
+  currentDF <- NULL
+  rejectedStrings <- NULL
+  approvedstrings <- NULL
+  
+  # searches C table for aproved patterns to produce l table
+  for (elem in power.set){
+    #if (nchar(elem) == lvl) {
+      for (i in seq(1:numcols)){
+        if (colnames(SubjectTable.processed) == elem){
+          currentDF <- cbind(currentDF,SubjectTable.processed[,i])
+        }
+      }
+    }
+  return(currentDF)
+  }
+  
+
+
+
+
+
+# calls all other functions, appends all l tables, and manages the parameters for the other functions (lvl and candidate list)
+# ouputs vector with items that equal or exceed the minSupport treshold
+# subjecttable list is a vector that includes all candidate tables
+Administrator <- function(charactersToMatch,lvl,subjectTable_list,minSupport){
+  
+  subjectTable_list <- as.data.frame(subjectTable_list)
+  listolists = NULL
+  pwrset <- powerSetGenerationmk2(charactersToMatch)
+  
+    for (j in seq(1:ncol(subjectTable_list))){
+      
+      # declares the k for lk/ck tables
+      lvl = nchar(colnames(subjectTable_list[j]))
+      
+      # turns list from list type to data frame type
+      list <- as.data.frame(subjectTable_list[j])
+      
+      # appends TRUE or FALSE. If false, list gets deleted and nothing is appended.
+      list <- toPruneOrNotToPrune(list,minSupport)
+      
+      # deletes itemsets and their supersets if they did not get accepted from the list that is used as reference to create the table (pruning)
+      pwrset <- stringkiller(pwrset,lvl,list,charactersToMatch)
+      
+      # looks for matches to the powerset, if the itemset matches a member of the pruned powerset, it hen is tested to see wether the final appended row
+      # is true or false. If alse, nothing gets appended
+      list <- (prunemk4(pwrset,lvl,list,charactersToMatch))
+      listolists <- cbind(listolists,list)
+      
+    }
+
+  return(listolists)   
+}
+
+debug(Administrator)
+
+superList <- c(c1_2,c2_2,c3_2,c4_2)
+wowow <- c(c1,c2,c3,c4)
+
+charlist<- c('A','B','C','D','E','F','G','H','I','J','K','L')
+
+
+dow <- Administrator(c('B','E','G','H'),1,superList,1)
+colnames(dow) <- c('B','E','G','H','BE','BG', 'BH', 'EG', 'EH', 'GH', 'BEG', 'BEH', 'BGH', 'EGH','BEGH')
